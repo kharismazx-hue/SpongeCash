@@ -16,9 +16,33 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
       - name: Extract project
+        run: unzip SpongeCashAndroid_Project.zip -d project
+
+      - name: Fix Java Kotlin compatibility
         run: |
-          unzip SpongeCashAndroid_Project.zip -d project
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("project/SpongeCashAndroid/app/build.gradle.kts")
+          s = p.read_text()
+          needle = "    compileSdk = 35\n"
+          addition = """    compileOptions {
+                  sourceCompatibility = JavaVersion.VERSION_17
+                  targetCompatibility = JavaVersion.VERSION_17
+              }
+              kotlinOptions {
+                  jvmTarget = "17"
+              }
+          """
+          if "sourceCompatibility" not in s:
+              s = s.replace(needle, needle + addition, 1)
+              p.write_text(s)
+          PY
 
       - name: Build APK
         run: |
