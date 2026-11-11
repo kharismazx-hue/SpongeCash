@@ -1,0 +1,29 @@
+{
+  "name": "Sponge Money Tracker",
+  "short_name": "Sponge Money",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#dff6ff",
+  "theme_color": "#ffe34f",
+  "description": "Money tracker tema Bikini Bottom",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "id": "./",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "portrait",
+  "prefer_related_applications": false
+}

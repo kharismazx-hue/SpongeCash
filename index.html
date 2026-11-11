@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffe34f"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="description" content="Money Tracker tema Bikini Bottom">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png">
+<title>Sponge Money Tracker</title>
+<style>
+:root{--yellow:#ffe34f;--blue:#bcecff;--navy:#174c75;--red:#ff8b80;--green:#8ee2a7}
+*{box-sizing:border-box}body{margin:0;background:#dff6ff;color:var(--navy);font-family:system-ui,-apple-system,sans-serif}
+header{background:var(--yellow);padding:22px 18px 18px;border-radius:0 0 28px 28px;box-shadow:0 4px 0 #e9ca32}
+h1{margin:0;font-size:25px}header p{margin:3px 0 14px;font-size:13px;color:#72571a}
+.hero{background:#fff;border-radius:20px;padding:16px}.muted{color:#64849a;font-size:12px}.balance{font-size:29px;font-weight:850;margin:3px 0 10px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{padding:12px;border-radius:15px;font-size:12px}.stat b{display:block;font-size:17px;margin-top:5px}.in{background:#def8e6;color:#167343}.out{background:#ffe6e2;color:#b43e38}
+main{padding:14px;max-width:650px;margin:auto}.card{background:#fff;border-radius:20px;padding:16px;margin:12px 0;box-shadow:0 3px 12px #174c7510}
+h2{font-size:18px;margin:0 0 13px}.tabs,.filters{display:flex;gap:8px;margin-bottom:13px}.tabs button,.filters button{flex:1;border:1px solid #d7e9f1;background:#f4fbff;color:var(--navy);padding:10px;border-radius:12px;font-weight:700}.tabs .active,.filters .active{background:var(--yellow);border-color:#e6c72f}
+label{display:block;font-size:12px;font-weight:700;margin:10px 0 5px}input,select{width:100%;padding:12px;border:1px solid #c9e0eb;border-radius:12px;font:inherit;background:#fbfeff;color:#174c75}
+.primary{width:100%;border:0;background:#1789b7;color:white;font-weight:800;padding:14px;border-radius:13px;margin-top:14px;font-size:15px}
+.row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #edf3f6}.row:last-child{border:0}.emoji{width:40px;height:40px;border-radius:13px;background:#e6f7ff;display:grid;place-items:center;font-size:21px}.desc{flex:1;min-width:0}.desc b{display:block;overflow-wrap:anywhere}.desc small{color:#7690a0}.value{font-weight:800;white-space:nowrap}.plus{color:#16844b}.minus{color:#c54a43}.delete{border:0;background:none;color:#c54a43;font-size:12px;padding:3px}
+.empty{text-align:center;padding:24px 5px;color:#68869a}.actions{display:flex;gap:8px;flex-wrap:wrap}.secondary{border:1px solid #a8d7e9;background:#f2fbff;color:#174c75;padding:10px 12px;border-radius:11px;font-weight:700}
+footer{text-align:center;font-size:11px;color:#64849a;padding:10px 20px 30px}
+.install-app{display:none;margin:0 0 14px;padding:10px 16px;border:0;border-radius:12px;background:#174c75;color:#fff;font-weight:800;font-size:14px;box-shadow:0 3px 0 #103a5b}
+.install-app:not([hidden]){display:inline-block}
+</style>
+</head>
+<body>
+<header><h1>🧽 SPONGE MONEY!</h1><p>Bikini Bottom Finance Club • catat uangmu, bestie!</p>
+<button class="install-app" id="installApp" type="button" hidden>⬇ Instal Aplikasi</button>
+<div class="hero"><div class="muted">TOTAL SALDO</div><div class="balance" id="balance">Rp0</div>
+<div class="stats"><div class="stat in">↙ Pemasukan<b id="income">Rp0</b></div><div class="stat out">↗ Pengeluaran<b id="expense">Rp0</b></div></div></div></header>
+<main>
+<section class="card"><h2>🫧 Catat transaksi</h2>
+<div class="tabs"><button class="active" id="expenseTab" type="button">Pengeluaran</button><button id="incomeTab" type="button">Pemasukan</button></div>
+<form id="form">
+<label for="amount">Nominal (Rp)</label><input id="amount" type="number" min="1" step="1" placeholder="Contoh: 50000" required>
+<label for="note">Keterangan</label><input id="note" maxlength="70" placeholder="Contoh: makan siang" required>
+<label for="category">Kategori</label><select id="category"></select>
+<label for="date">Tanggal</label><input id="date" type="date" required>
+<button class="primary" type="submit">＋ Simpan transaksi</button></form></section>
+<section class="card"><h2>🐚 Riwayat transaksi</h2><div class="filters"><button class="active" data-filter="Semua">Semua</button><button data-filter="Pengeluaran">Keluar</button><button data-filter="Pemasukan">Masuk</button></div><div id="history"></div>
+<div class="actions"><button class="secondary" id="csv">⬇ Export CSV</button><button class="secondary" id="clear">Hapus semua data</button></div></section>
+<section class="card"><h2>📊 Ringkasan bulan ini</h2><div class="row"><span class="desc">Pemasukan bulan ini</span><b class="plus" id="monthIncome">Rp0</b></div><div class="row"><span class="desc">Pengeluaran bulan ini</span><b class="minus" id="monthExpense">Rp0</b></div><div class="row"><span class="desc">Sisa bulan ini</span><b id="monthBalance">Rp0</b></div><p class="muted" id="ratio">Persentase pengeluaran: 0%</p></section>
+</main><footer>🍍 “I’m ready… to manage my money!”<br>Data disimpan di perangkat ini melalui browser. Jangan hapus data situs jika ingin menyimpannya.</footer>
+<script>
+const $=id=>document.getElementById(id), money=n=>'Rp'+Math.abs(n).toLocaleString('id-ID');
+let kind='Pengeluaran', filter='Semua', data=[];
+try{data=JSON.parse(localStorage.getItem('spongeMoneyData')||'[]')}catch(e){data=[]}
+const cats={Pengeluaran:['Makanan','Transportasi','Belanja','Tagihan','Hiburan','Kesehatan','Kebutuhan','Lainnya'],Pemasukan:['Gaji','Bonus','Freelance','Hadiah','Penjualan','Lainnya']};
+function setKind(k){kind=k;$('expenseTab').classList.toggle('active',k==='Pengeluaran');$('incomeTab').classList.toggle('active',k==='Pemasukan');$('category').innerHTML=cats[k].map(c=>`<option>${c}</option>`).join('')}
+$('expenseTab').onclick=()=>setKind('Pengeluaran');$('incomeTab').onclick=()=>setKind('Pemasukan');
+$('date').value=new Date().toLocaleDateString('en-CA');setKind(kind);
+function save(){localStorage.setItem('spongeMoneyData',JSON.stringify(data));render()}
+$('form').onsubmit=e=>{e.preventDefault();let amount=Number($('amount').value);if(!Number.isFinite(amount)||amount<=0)return;data.push({id:Date.now()+Math.random(),kind,amount,note:$('note').value.trim(),category:$('category').value,date:$('date').value});save();$('form').reset();$('date').value=new Date().toLocaleDateString('en-CA');setKind(kind);$('amount').focus()};
+document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.classList.toggle('active',x===b));render()});
+function render(){let inc=data.filter(x=>x.kind==='Pemasukan').reduce((s,x)=>s+x.amount,0),out=data.filter(x=>x.kind==='Pengeluaran').reduce((s,x)=>s+x.amount,0);$('balance').textContent=(inc-out<0?'-':'')+money(inc-out);$('income').textContent=money(inc);$('expense').textContent=money(out);
+let list=[...data].filter(x=>filter==='Semua'||x.kind===filter).sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+$('history').innerHTML=list.length?list.map(x=>`<div class="row"><div class="emoji">${x.kind==='Pemasukan'?'💰':'🧾'}</div><div class="desc"><b>${esc(x.note)}</b><small>${esc(x.category)} • ${esc(x.date)}</small></div><div class="value ${x.kind==='Pemasukan'?'plus':'minus'}">${x.kind==='Pemasukan'?'+':'−'}${money(x.amount)}<br><button class="delete" data-del="${x.id}">Hapus</button></div></div>`).join(''):'<div class="empty">🐚 Belum ada transaksi.<br>Yuk mulai catat uangmu!</div>';
+document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{if(confirm('Hapus transaksi ini?')){data=data.filter(x=>String(x.id)!==b.dataset.del);save()}});
+let ym=new Date().toLocaleDateString('en-CA').slice(0,7), m=data.filter(x=>x.date.startsWith(ym)),mi=m.filter(x=>x.kind==='Pemasukan').reduce((s,x)=>s+x.amount,0),mo=m.filter(x=>x.kind==='Pengeluaran').reduce((s,x)=>s+x.amount,0);$('monthIncome').textContent=money(mi);$('monthExpense').textContent=money(mo);$('monthBalance').textContent=(mi-mo<0?'-':'')+money(mi-mo);$('ratio').textContent='Persentase pengeluaran: '+(mi?((mo/mi)*100).toFixed(1):'0')+'% dari pemasukan bulan ini'}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('clear').onclick=()=>{if(confirm('Yakin hapus SEMUA transaksi? Data yang dihapus tidak bisa dikembalikan.')){data=[];save()}};
+$('csv').onclick=()=>{let rows=[['Tanggal','Jenis','Keterangan','Kategori','Nominal'],...data.map(x=>[x.date,x.kind,x.note,x.category,x.amount])];let csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download='sponge-money-tracker.csv';a.click();URL.revokeObjectURL(a.href)};
+render();
+
+// Tombol instal hanya muncul jika browser mendukung prompt instal PWA.
+let installPromptEvent = null;
+const installButton = $('installApp');
+
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  installPromptEvent = event;
+  installButton.hidden = false;
+});
+
+installButton.addEventListener('click', async () => {
+  if (!installPromptEvent) return;
+  installPromptEvent.prompt();
+  await installPromptEvent.userChoice;
+  installPromptEvent = null;
+  installButton.hidden = true;
+});
+
+window.addEventListener('appinstalled', () => {
+  installPromptEvent = null;
+  installButton.hidden = true;
+});
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(error => {
+      console.error('Service Worker gagal didaftarkan:', error);
+    });
+  });
+}
+</script></body></html>
